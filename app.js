@@ -1,19 +1,16 @@
 const express = require("express");
-require("dotenv/config");
 const mongoose = require("mongoose");
-
 const app = express();
+const bodyParser = require("body-parser");
+require("dotenv/config");
 
-app.use("/", () => {
-  console.log("middleware called");
-});
+const serversRoute = require("./routes/servers");
+
+app.use(bodyParser.json());
+app.use("/servers", serversRoute);
 
 mongoose.connect(process.env.DB_CONNECTION, () => {
   console.log("Connection to db established");
 });
 
 app.listen(3000);
-
-app.get("/", (req, res) => {
-  res.send("/ is called");
-});
