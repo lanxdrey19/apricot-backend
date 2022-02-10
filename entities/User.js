@@ -10,7 +10,7 @@ const UserSchema = mongoose.Schema({
     required: true,
   },
   tags: {
-    type: [{ String: String }],
+    type: [[String]],
     required: true,
   },
   nextClaimTime: {

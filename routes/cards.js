@@ -3,7 +3,6 @@ const router = express.Router();
 const Server = require("../entities/Server");
 const User = require("../entities/User");
 const Template = require("../entities/Template");
-const { valid } = require("semver");
 
 router.get("/name/:userId/:name", async (req, res) => {
   try {
@@ -20,7 +19,34 @@ router.get("/name/:userId/:name", async (req, res) => {
       const template = await Template.findById(card[0]);
       if (template.name.toLowerCase().includes(req.params.name.toLowerCase())) {
         validCards.push(card);
-        console.log(validCards);
+      }
+      count++;
+      if (count === cardsLength) {
+        res.json(validCards);
+      }
+    });
+  } catch (err) {
+    res.json({ message: err });
+  }
+});
+
+router.get("/group/:userId/:group", async (req, res) => {
+  try {
+    const user = await User.findOne({
+      userId: req.params.userId,
+    });
+
+    let validCards = [];
+
+    const cardsLength = user.cards.length;
+    let count = 0;
+
+    user.cards.forEach(async (card) => {
+      const template = await Template.findById(card[0]);
+      if (
+        template.group.toLowerCase().includes(req.params.group.toLowerCase())
+      ) {
+        validCards.push(card);
       }
       count++;
       if (count === cardsLength) {

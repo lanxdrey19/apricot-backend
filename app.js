@@ -8,12 +8,14 @@ const serversRoute = require("./routes/servers");
 const templatesRoute = require("./routes/templates");
 const usersRoute = require("./routes/users");
 const cardsRoute = require("./routes/cards");
+const tagsRoute = require("./routes/tags");
 
 app.use(bodyParser.json());
 app.use("/servers", serversRoute);
 app.use("/templates", templatesRoute);
 app.use("/users", usersRoute);
 app.use("/cards", cardsRoute);
+app.use("/tags", tagsRoute);
 
 mongoose.connect(process.env.DB_CONNECTION, () => {
   console.log("Connection to db established");
