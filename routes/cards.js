@@ -4,6 +4,18 @@ const Server = require("../entities/Server");
 const User = require("../entities/User");
 const Template = require("../entities/Template");
 
+router.get("/all/:userId", async (req, res) => {
+  try {
+    const user = await User.findOne({
+      userId: req.params.userId,
+    });
+
+    res.json(user.cards);
+  } catch (err) {
+    res.json({ message: err });
+  }
+});
+
 router.get("/name/:userId/:name", async (req, res) => {
   try {
     const user = await User.findOne({
