@@ -16,7 +16,7 @@ router.get("/name/:userId/:name", async (req, res) => {
     let count = 0;
 
     user.cards.forEach(async (card) => {
-      const template = await Template.findById(card[0]);
+      const template = await Template.findById(card.templateId);
       if (template.name.toLowerCase().includes(req.params.name.toLowerCase())) {
         validCards.push(card);
       }
@@ -42,7 +42,7 @@ router.get("/group/:userId/:group", async (req, res) => {
     let count = 0;
 
     user.cards.forEach(async (card) => {
-      const template = await Template.findById(card[0]);
+      const template = await Template.findById(card.templateId);
       if (
         template.group.toLowerCase().includes(req.params.group.toLowerCase())
       ) {
@@ -58,16 +58,17 @@ router.get("/group/:userId/:group", async (req, res) => {
   }
 });
 
-router.get("/tag/:userId/:tag?", async (req, res) => {
+router.get("/tag/:userId/:tagName?", async (req, res) => {
   try {
-    if (req.params.tag === undefined) {
-      res.status(400);
+    if (req.params.tagName === undefined) {
+      res.status(400).json({ message: err });
     }
     const user = await User.findOne({
       userId: req.params.userId,
     });
-
-    const result = user.cards.filter((card) => card[3] === req.params.tag);
+    const result = user.cards.filter(
+      (card) => card.tagName === req.params.tagName.toLowerCase()
+    );
     res.json(result);
   } catch (err) {
     res.json({ message: err });
@@ -82,8 +83,8 @@ router.get("/serial/:userId/:upperBound?/:lowerBound?", async (req, res) => {
 
     const result = user.cards.filter(
       (card) =>
-        Number(card[1]) >= Number(req.params.lowerBound) &&
-        Number(card[1]) <= Number(req.params.upperBound)
+        Number(card.recordedSerial) >= Number(req.params.lowerBound) &&
+        Number(card.recordedSerial) <= Number(req.params.upperBound)
     );
     res.json(result);
   } catch (err) {
@@ -99,8 +100,8 @@ router.get("/stars/:userId/:upperBound?/:lowerBound?", async (req, res) => {
 
     const result = user.cards.filter(
       (card) =>
-        Number(card[2]) >= Number(req.params.lowerBound) &&
-        Number(card[2]) <= Number(req.params.upperBound)
+        Number(card.stars) >= Number(req.params.lowerBound) &&
+        Number(card.stars) <= Number(req.params.upperBound)
     );
     res.json(result);
   } catch (err) {
@@ -111,9 +112,15 @@ router.get("/stars/:userId/:upperBound?/:lowerBound?", async (req, res) => {
 router.patch("/add/:templateId", async (req, res) => {
   try {
     const template = await Template.findById(req.params.templateId);
+    let card = {
+      templateId: template._id,
+      recordedSerial: template.serial,
+      stars: Number(req.body.stars),
+      tagName: "",
+    };
     const updatedUser = await User.updateOne(
       { userId: req.body.userId },
-      { $push: { cards: [template._id, template.serial, req.body.stars, ""] } }
+      { $push: { cards: card } }
     );
     res.json(updatedUser);
   } catch (err) {
@@ -124,9 +131,15 @@ router.patch("/add/:templateId", async (req, res) => {
 router.patch("/delete/:templateId", async (req, res) => {
   try {
     const template = await Template.findById(req.params.templateId);
+    let card = {
+      templateId: template._id,
+      recordedSerial: req.body.recordedSerial,
+      stars: Number(req.body.stars),
+      tagName: req.body.tagName,
+    };
     const updatedUser = await User.updateOne(
       { userId: req.body.userId },
-      { $pull: { cards: [template._id, template.serial, req.body.stars, ""] } }
+      { $pull: { cards: card } }
     );
     res.json(updatedUser);
   } catch (err) {
