@@ -29,7 +29,18 @@ const UserSchema = mongoose.Schema({
     required: true,
   },
   tags: {
-    type: [[String]],
+    type: [
+      {
+        tagName: {
+          type: String,
+          required: true,
+        },
+        tagEmote: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     required: true,
   },
   nextClaimTime: {
