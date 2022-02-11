@@ -6,7 +6,26 @@ const UserSchema = mongoose.Schema({
     required: true,
   },
   cards: {
-    type: [[String]], // [reference to template db id, recorded serial, stars, tag name ("" if no tag) ]
+    type: [
+      {
+        templateId: {
+          type: String,
+          required: true,
+        },
+        recordedSerial: {
+          type: String,
+          required: true,
+        },
+        stars: {
+          type: Number,
+          required: true,
+        },
+        tagName: {
+          type: String,
+          default: "",
+        },
+      },
+    ],
     required: true,
   },
   tags: {
