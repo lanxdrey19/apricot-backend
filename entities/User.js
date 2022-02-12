@@ -26,7 +26,7 @@ const UserSchema = mongoose.Schema({
         },
       },
     ],
-    required: true,
+    default: [],
   },
   tags: {
     type: [
@@ -41,15 +41,15 @@ const UserSchema = mongoose.Schema({
         },
       },
     ],
-    required: true,
+    default: [],
   },
-  nextClaimTime: {
+  lastClaimed: {
     type: Date,
-    default: null,
+    default: Date.now(),
   },
-  nextDropTime: {
+  lastDropped: {
     type: Date,
-    default: null,
+    default: Date.now(),
   },
   tokens: {
     type: Number,

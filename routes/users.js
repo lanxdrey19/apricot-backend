@@ -7,11 +7,6 @@ const Template = require("../entities/Template");
 router.post("/", async (req, res) => {
   const user = new User({
     userId: req.body.userId,
-    cards: [],
-    tags: [],
-    nextClaimTime: null,
-    nextDropTime: null,
-    tokens: 0,
   });
 
   try {
