@@ -12,7 +12,7 @@ router.get("/all/:userId", async (req, res) => {
 
     res.json(user.cards);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
@@ -38,7 +38,7 @@ router.get("/name/:userId/:name", async (req, res) => {
       }
     });
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
@@ -66,7 +66,7 @@ router.get("/group/:userId/:group", async (req, res) => {
       }
     });
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
@@ -83,7 +83,7 @@ router.get("/tag/:userId/:tagName?", async (req, res) => {
     );
     res.json(result);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
@@ -100,7 +100,7 @@ router.get("/serial/:userId/:upperBound?/:lowerBound?", async (req, res) => {
     );
     res.json(result);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
@@ -117,7 +117,7 @@ router.get("/stars/:userId/:upperBound?/:lowerBound?", async (req, res) => {
     );
     res.json(result);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
@@ -126,7 +126,7 @@ router.patch("/add/:templateId", async (req, res) => {
     const template = await Template.findById(req.params.templateId);
     let card = {
       templateId: template._id,
-      recordedSerial: template.serial,
+      recordedSerial: req.body.recordedSerial,
       stars: Number(req.body.stars),
       tagName: "",
     };
@@ -136,26 +136,110 @@ router.patch("/add/:templateId", async (req, res) => {
     );
     res.json(updatedUser);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
+  }
+});
+
+router.patch("/claim/:templateId", async (req, res) => {
+  try {
+    let finalStars;
+    let starNumber = Math.floor(Math.random() * 101) + 1;
+    if (starNumber > 99) {
+      finalStars = 5;
+    } else if (starNumber > 90) {
+      finalStars = 4;
+    } else if (starNumber > 75) {
+      finalStars = 3;
+    } else if (starNumber > 55) {
+      finalStars = 2;
+    } else if (starNumber > 30) {
+      finalStars = 1;
+    } else {
+      finalStars = 0;
+    }
+
+    const template = await Template.findById(req.params.templateId);
+    let card = {
+      templateId: template._id,
+      recordedSerial: template.serial,
+      stars: finalStars,
+      tagName: "",
+    };
+    const updatedUser = await User.updateOne(
+      { userId: req.body.userId },
+      { $push: { cards: card } }
+    );
+    res.json(updatedUser);
+  } catch (err) {
+    res.status(400).json({ message: err });
   }
 });
 
 router.patch("/delete/:templateId", async (req, res) => {
   try {
     const template = await Template.findById(req.params.templateId);
+
     let card = {
       templateId: template._id,
       recordedSerial: req.body.recordedSerial,
       stars: Number(req.body.stars),
       tagName: req.body.tagName,
     };
-    const updatedUser = await User.updateOne(
+
+    await User.updateOne(
       { userId: req.body.userId },
       { $pull: { cards: card } }
     );
-    res.json(updatedUser);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
+  }
+});
+
+router.patch("/burn/:templateId", async (req, res) => {
+  try {
+    const template = await Template.findById(req.params.templateId);
+
+    let card = {
+      templateId: template._id,
+      recordedSerial: req.body.recordedSerial,
+      stars: Number(req.body.stars),
+      tagName: req.body.tagName,
+    };
+
+    let finalTokens;
+
+    if (Number(req.body.stars) === 5) {
+      finalTokens = Math.floor(Math.random() * 1) + 100;
+    } else if (Number(req.body.stars) === 4) {
+      finalTokens = Math.floor(Math.random() * 9) + 91;
+    } else if (Number(req.body.stars) === 3) {
+      finalTokens = Math.floor(Math.random() * 15) + 76;
+    } else if (Number(req.body.stars) === 2) {
+      finalTokens = Math.floor(Math.random() * 20) + 56;
+    } else if (Number(req.body.stars) === 1) {
+      finalTokens = Math.floor(Math.random() * 25) + 31;
+    } else {
+      finalTokens = Math.floor(Math.random() * 30) + 1;
+    }
+
+    const user = await User.findOne({
+      userId: req.body.userId,
+    });
+    if (Number(finalTokens) + Number(user.tokens) > 100000) {
+      await User.updateOne(
+        { userId: req.body.userId },
+        { $set: { tokens: 100000 }, $pull: { cards: card } }
+      );
+      res.status(200).json({ message: "max tokens is 100,000" });
+    } else {
+      const updatedUser = await User.updateOne(
+        { userId: req.body.userId },
+        { $inc: { tokens: finalTokens }, $pull: { cards: card } }
+      );
+      res.status(200).json(updatedUser);
+    }
+  } catch (err) {
+    res.status(400).json({ message: err });
   }
 });
 
