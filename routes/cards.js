@@ -12,7 +12,7 @@ router.get("/all/:userId", async (req, res) => {
 
     res.json(user.cards);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
@@ -38,7 +38,7 @@ router.get("/name/:userId/:name", async (req, res) => {
       }
     });
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
@@ -66,7 +66,7 @@ router.get("/group/:userId/:group", async (req, res) => {
       }
     });
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
@@ -83,7 +83,7 @@ router.get("/tag/:userId/:tagName?", async (req, res) => {
     );
     res.json(result);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
@@ -100,7 +100,7 @@ router.get("/serial/:userId/:upperBound?/:lowerBound?", async (req, res) => {
     );
     res.json(result);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
@@ -117,7 +117,26 @@ router.get("/stars/:userId/:upperBound?/:lowerBound?", async (req, res) => {
     );
     res.json(result);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
+  }
+});
+
+router.patch("/add/:templateId", async (req, res) => {
+  try {
+    const template = await Template.findById(req.params.templateId);
+    let card = {
+      templateId: template._id,
+      recordedSerial: req.body.recordedSerial,
+      stars: Number(req.body.stars),
+      tagName: "",
+    };
+    const updatedUser = await User.updateOne(
+      { userId: req.body.userId },
+      { $push: { cards: card } }
+    );
+    res.json(updatedUser);
+  } catch (err) {
+    res.status(400).json({ message: err });
   }
 });
 
@@ -152,7 +171,27 @@ router.patch("/claim/:templateId", async (req, res) => {
     );
     res.json(updatedUser);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
+  }
+});
+
+router.patch("/delete/:templateId", async (req, res) => {
+  try {
+    const template = await Template.findById(req.params.templateId);
+
+    let card = {
+      templateId: template._id,
+      recordedSerial: req.body.recordedSerial,
+      stars: Number(req.body.stars),
+      tagName: req.body.tagName,
+    };
+
+    await User.updateOne(
+      { userId: req.body.userId },
+      { $pull: { cards: card } }
+    );
+  } catch (err) {
+    res.status(400).json({ message: err });
   }
 });
 
@@ -200,7 +239,7 @@ router.patch("/burn/:templateId", async (req, res) => {
       res.status(200).json(updatedUser);
     }
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
