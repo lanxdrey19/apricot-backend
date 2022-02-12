@@ -113,4 +113,52 @@ router.patch("/update", async (req, res) => {
   }
 });
 
+router.patch("/tagcard", async (req, res) => {
+  try {
+    const user = await User.findOne({
+      userId: req.body.userId,
+    });
+
+    const matchingTag = user.tags.filter(
+      (tag) => tag.tagName === req.body.newTagName.toLowerCase()
+    );
+    if (matchingTag.length !== 1 && req.body.newTagName !== "") {
+      console.log("lmao");
+      res.status(400).json({ message: "error" });
+    }
+
+    user.cards.forEach(async (card) => {
+      if (
+        card.recordedSerial.toLowerCase() ===
+          req.body.recordedSerial.toLowerCase() &&
+        card.stars === Number(req.body.stars) &&
+        card.tagName === req.body.tagName.toLowerCase()
+      ) {
+        const updatedUser = await User.updateOne(
+          {
+            userId: req.body.userId,
+            cards: {
+              $elemMatch: {
+                templateId: card.templateId,
+                recordedSerial: card.recordedSerial,
+                stars: card.stars,
+                tagName: card.tagName,
+              },
+            },
+          },
+          {
+            $set: {
+              "cards.$.tagName": req.body.newTagName.toLowerCase(),
+            },
+          }
+        );
+        console.log(updatedUser);
+        res.json(updatedUser);
+      }
+    });
+  } catch (err) {
+    res.json({ message: err });
+  }
+});
+
 module.exports = router;
