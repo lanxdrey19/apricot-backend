@@ -143,7 +143,7 @@ router.patch("/add/:templateId", async (req, res) => {
 router.patch("/claim/:templateId", async (req, res) => {
   try {
     let finalStars;
-    let starNumber = Math.floor(Math.random() * 101) + 1;
+    let starNumber = Math.floor(Math.random() * 100) + 1;
     if (starNumber > 99) {
       finalStars = 5;
     } else if (starNumber > 90) {

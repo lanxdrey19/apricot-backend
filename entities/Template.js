@@ -19,7 +19,7 @@ const TemplateSchema = mongoose.Schema({
   },
   serial: {
     type: Number,
-    default: 0,
+    default: 1,
   },
 });
 
