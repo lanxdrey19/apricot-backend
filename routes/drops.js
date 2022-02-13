@@ -6,15 +6,12 @@ const Template = require("../entities/Template");
 
 router.get("/", async (req, res) => {
   try {
-    console.log("hi");
     const templates = await Template.find();
-    console.log("hi 2");
     let finalList = [];
     while (finalList.length < 3) {
       const template = templates[Math.floor(Math.random() * templates.length)];
 
       if (!finalList.includes(template)) {
-        console.log(template);
         finalList.push(template);
       }
     }
