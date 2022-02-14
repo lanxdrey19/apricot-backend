@@ -15,6 +15,10 @@ const templateTemplate = {
     type: String,
     required: true,
   },
+  logo: {
+    type: String,
+    required: true,
+  },
   serial: {
     type: Number,
     default: 1,

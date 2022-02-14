@@ -10,7 +10,6 @@ router.get("/:serverId", async (req, res) => {
       serverController,
       req.params.serverId
     );
-    console.log(server);
 
     res.status(200).json(server);
   } catch (err) {
