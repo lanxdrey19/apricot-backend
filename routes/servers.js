@@ -14,11 +14,10 @@ router.get("/:serverId", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const server = new Server({
-    serverId: req.body.serverId,
-  });
-
   try {
+    const server = new Server({
+      serverId: req.body.serverId,
+    });
     const savedServer = await server.save();
     res.json(savedServer);
   } catch (err) {
