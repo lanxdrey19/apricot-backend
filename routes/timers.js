@@ -3,66 +3,55 @@ const router = express.Router();
 const Server = require("../entities/Server");
 const User = require("../entities/User");
 const Template = require("../entities/Template");
+const timerInteractor = require("../use_cases/timer_interactor");
+const timerController = require("../controllers/timer_controller");
 
-router.get("/drop/validate", async (req, res) => {
+router.get("/drop/validate/:userId", async (req, res) => {
   try {
-    const user = await User.findOne({
-      userId: req.body.userId,
-    });
-
-    let secondsBetweenTwoDates = Math.abs(
-      (Number(Date.now()) - Number(Date.parse(user.lastDropped))) / 1000
+    const result = await timerInteractor.executeValidateDrop(
+      timerController,
+      req.params.userId
     );
 
-    if (secondsBetweenTwoDates > 1800) {
-      res.status(200).json({ message: "valid" });
-    } else {
-      res.status(400).json({ message: "error" });
-    }
+    res.status(200).json(result);
   } catch (err) {
     res.status(400).json({ message: err });
   }
 });
 
-router.get("/claim/validate", async (req, res) => {
+router.get("/claim/validate/:userId", async (req, res) => {
   try {
-    const user = await User.findOne({
-      userId: req.body.userId,
-    });
-
-    let secondsBetweenTwoDates = Math.abs(
-      (Number(Date.now()) - Number(Date.parse(user.lastDropped))) / 1000
+    const result = await timerInteractor.executeValidateClaim(
+      timerController,
+      req.params.userId
     );
 
-    if (secondsBetweenTwoDates > 600) {
-      res.status(200).json({ message: "valid" });
-    } else {
-      res.status(400).json({ message: "error" });
-    }
+    res.status(200).json(result);
   } catch (err) {
     res.status(400).json({ message: err });
   }
 });
 
-router.get("/drop/set", async (req, res) => {
+router.patch("/drop/set", async (req, res) => {
   try {
-    const updatedUser = await User.updateOne(
-      { userId: req.body.userId },
-      { $set: { lastDropped: Date.now() } }
+    const result = await timerInteractor.executeUpdateLastDropped(
+      timerController,
+      req.body.userId
     );
-    res.status(200).json(updatedUser);
+
+    res.status(200).json(result);
   } catch (err) {
     res.status(400).json({ message: err });
   }
 });
 
-router.get("/claim/set", async (req, res) => {
+router.patch("/claim/set", async (req, res) => {
   try {
-    const updatedUser = await User.updateOne(
-      { userId: req.body.userId },
-      { $set: { lastClaimed: Date.now() } }
+    const result = await timerInteractor.executeUpdateLastClaimed(
+      timerController,
+      req.body.userId
     );
-    res.status(200).json(updatedUser);
+    res.status(200).json(result);
   } catch (err) {
     res.status(400).json({ message: err });
   }
