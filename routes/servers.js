@@ -1,38 +1,42 @@
 const express = require("express");
 const router = express.Router();
 const Server = require("../entities/Server");
+const serverInteractor = require("../use_cases/server_interactor");
+const serverController = require("../controllers/server_controller");
 
 router.get("/:serverId", async (req, res) => {
   try {
-    const server = await Server.find({
-      serverId: req.params.serverId,
-    });
-    res.json(server);
+    const server = await serverInteractor.executeGetServer(
+      serverController,
+      req.params.serverId
+    );
+
+    res.status(200).json(server);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
 router.post("/", async (req, res) => {
-  const server = new Server({
-    serverId: req.body.serverId,
-  });
-
   try {
-    const savedServer = await server.save();
-    res.json(savedServer);
+    const server = await serverInteractor.executeCreateServer(
+      serverController,
+      req.body
+    );
+    res.json(server);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
 router.patch("/:serverId", async (req, res) => {
   try {
-    const updatedServer = await Server.updateOne(
-      { serverId: req.params.serverId },
-      { $set: { dropChannel: req.body.dropChannel } }
+    const server = await serverInteractor.executeUpdateDropChannel(
+      serverController,
+      req.params.serverId,
+      req.body
     );
-    res.json(updatedServer);
+    res.json(server);
   } catch (err) {
     res.json({ message: err });
   }

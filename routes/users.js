@@ -3,15 +3,17 @@ const router = express.Router();
 const User = require("../entities/User");
 const Server = require("../entities/Server");
 const Template = require("../entities/Template");
+const userInteractor = require("../use_cases/user_interactor");
+const userController = require("../controllers/user_controller");
 
 router.post("/", async (req, res) => {
-  const user = new User({
-    userId: req.body.userId,
-  });
-
   try {
-    const savedUser = await user.save();
-    res.json(savedUser);
+    const result = await userInteractor.executeCreateUser(
+      userController,
+      req.body.userId
+    );
+
+    res.status(200).json(result);
   } catch (err) {
     res.json({ message: err });
   }
@@ -19,11 +21,12 @@ router.post("/", async (req, res) => {
 
 router.get("/:userId", async (req, res) => {
   try {
-    const user = await User.findOne({
-      userId: req.params.userId,
-    });
+    const result = await userInteractor.executeGetUser(
+      userController,
+      req.params.userId
+    );
 
-    res.status(200).json(user);
+    res.status(200).json(result);
   } catch (err) {
     res.json({ message: err });
   }

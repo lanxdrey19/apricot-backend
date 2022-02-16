@@ -3,23 +3,14 @@ const router = express.Router();
 const Server = require("../entities/Server");
 const User = require("../entities/User");
 const Template = require("../entities/Template");
+const dropInteractor = require("../use_cases/drop_interactor");
+const dropController = require("../controllers/drop_controller");
 
 router.get("/", async (req, res) => {
   try {
-    console.log("hi");
-    const templates = await Template.find();
-    console.log("hi 2");
-    let finalList = [];
-    while (finalList.length < 3) {
-      const template = templates[Math.floor(Math.random() * templates.length)];
+    const result = await serverInteractor.executeDropCards(dropController);
 
-      if (!finalList.includes(template)) {
-        console.log(template);
-        finalList.push(template);
-      }
-    }
-
-    res.status(200).json(finalList);
+    res.status(200).json(result);
   } catch (err) {
     res.status(400).json({ message: err });
   }

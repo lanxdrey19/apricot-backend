@@ -1,36 +1,30 @@
 const express = require("express");
 const router = express.Router();
 const Template = require("../entities/Template");
+const templateInteractor = require("../use_cases/template_interactor");
+const templateController = require("../controllers/template_controller");
 
 router.post("/", async (req, res) => {
-  const template = new Template({
-    name: req.body.name,
-    group: req.body.group,
-    era: req.body.era,
-    photo: req.body.photo,
-  });
-
   try {
-    const savedTemplate = await template.save();
-    res.json(savedTemplate);
+    const template = await templateInteractor.executeCreateTemplate(
+      templateController,
+      req.body
+    );
+    res.status(200).json(template);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
 router.patch("/increment", async (req, res) => {
   try {
-    const updatedTemplate = await Template.updateOne(
-      {
-        name: req.body.name,
-        group: req.body.group,
-        era: req.body.era,
-      },
-      { $inc: { serial: 1 } }
+    const template = await templateInteractor.executeIncrementSerial(
+      templateController,
+      req.body
     );
-    res.json(updatedTemplate);
+    res.status(200).json(template);
   } catch (err) {
-    res.json({ message: err });
+    res.status(400).json({ message: err });
   }
 });
 
