@@ -124,6 +124,8 @@ const updateTagUserCard = async function (requestBody) {
 
     user.cards.forEach(async (card) => {
       if (
+        card.templateId.toLowerCase() ===
+          requestBody.templateId.toLowerCase() &&
         card.recordedSerial.toLowerCase() ===
           requestBody.recordedSerial.toLowerCase() &&
         card.stars === Number(requestBody.stars) &&

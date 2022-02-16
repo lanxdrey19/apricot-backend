@@ -193,6 +193,51 @@ const deleteBurntCardFromUser = async function (
   return updatedUser;
 };
 
+const updateCardStars = async function (requestBody) {
+  try {
+    const user = await User.findOne({
+      userId: requestBody.userId,
+    });
+
+    user.cards.forEach(async (card) => {
+      if (Number(requestBody.stars === 5)) {
+        throw new Error("Card cannot be upgraded any further");
+      }
+
+      if (
+        card.templateId.toLowerCase() ===
+          requestBody.templateId.toLowerCase() &&
+        card.recordedSerial.toLowerCase() ===
+          requestBody.recordedSerial.toLowerCase() &&
+        card.stars === Number(requestBody.stars) &&
+        card.tagName === requestBody.tagName.toLowerCase()
+      ) {
+        const updatedUser = await User.updateOne(
+          {
+            userId: requestBody.userId,
+            cards: {
+              $elemMatch: {
+                templateId: card.templateId,
+                recordedSerial: card.recordedSerial,
+                stars: card.stars,
+                tagName: card.tagName,
+              },
+            },
+          },
+          {
+            $inc: {
+              "cards.$.stars": 1,
+            },
+          }
+        );
+        return updatedUser;
+      }
+    });
+  } catch (err) {
+    throw new Error("Card's stars could not be incremented");
+  }
+};
+
 module.exports = {
   findUserCards,
   findCardsByName,
@@ -204,4 +249,5 @@ module.exports = {
   addClaimedCardToUser,
   deleteCardFromUser,
   deleteBurntCardFromUser,
+  updateCardStars,
 };
