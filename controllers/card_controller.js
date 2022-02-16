@@ -110,6 +110,10 @@ const burnCard = async function (templateIdentifier, requestBody) {
   );
 };
 
+const upgradeCard = async function (requestBody) {
+  return await cardDAO.updateCardStars(requestBody);
+};
+
 module.exports = {
   getUserCards,
   getCardsByName,
@@ -121,4 +125,5 @@ module.exports = {
   claimCard,
   deleteCardFromUser,
   burnCard,
+  upgradeCard,
 };

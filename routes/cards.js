@@ -141,4 +141,16 @@ router.patch("/burn/:templateId", async (req, res) => {
   }
 });
 
+router.patch("/upgradeCard", async (req, res) => {
+  try {
+    const result = await cardInteractor.executeUpgradeCard(
+      cardController,
+      req.body
+    );
+    res.status(200).json(result);
+  } catch (err) {
+    res.json({ message: err });
+  }
+});
+
 module.exports = router;
