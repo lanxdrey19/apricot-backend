@@ -3,7 +3,7 @@ const User = require("../entities/User");
 const findTags = async function (userIdentifier) {
   try {
     const user = await User.findOne({
-      userId: req.params.userId,
+      userId: userIdentifier,
     });
 
     return user.tags;
@@ -114,44 +114,37 @@ const updateTagUserCard = async function (requestBody) {
     const user = await User.findOne({
       userId: requestBody.userId,
     });
-
     const matchingTag = user.tags.filter(
-      (tag) => tag.tagName === requestBody.newTagName.toLowerCase()
+      (tag) =>
+        tag.tagName.toLowerCase() === requestBody.newTagName.toLowerCase()
     );
     if (matchingTag.length !== 1 && requestBody.newTagName !== "") {
       res.status(400).json({ message: "error" });
     }
-
-    user.cards.forEach(async (card) => {
-      if (
+    const matchingCards = user.cards.filter(
+      (card) =>
         card.templateId.toLowerCase() ===
           requestBody.templateId.toLowerCase() &&
         card.recordedSerial.toLowerCase() ===
           requestBody.recordedSerial.toLowerCase() &&
         card.stars === Number(requestBody.stars) &&
-        card.tagName === requestBody.tagName.toLowerCase()
-      ) {
-        const updatedUser = await User.updateOne(
-          {
-            userId: requestBody.userId,
-            cards: {
-              $elemMatch: {
-                templateId: card.templateId,
-                recordedSerial: card.recordedSerial,
-                stars: card.stars,
-                tagName: card.tagName,
-              },
-            },
-          },
-          {
-            $set: {
-              "cards.$.tagName": requestBody.newTagName.toLowerCase(),
-            },
-          }
-        );
-        res.json(updatedUser);
+        card.tagName.toLowerCase() === requestBody.tagName.toLowerCase()
+    );
+
+    const updatedUser = await User.updateOne(
+      {
+        userId: requestBody.userId,
+        cards: {
+          $elemMatch: matchingCards[0],
+        },
+      },
+      {
+        $set: {
+          "cards.$.tagName": requestBody.newTagName.toLowerCase(),
+        },
       }
-    });
+    );
+    return updatedUser;
   } catch (err) {
     throw new Error("Card's tag could not be updated");
   }
