@@ -1,6 +1,6 @@
 const Template = require("../entities/Template");
 
-const getTemplates = async function (serverIdentifier) {
+const getTemplates = async function (s) {
   try {
     const templates = await Template.find();
     let finalList = [];
