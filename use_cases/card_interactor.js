@@ -72,8 +72,8 @@ const executeBurnCard = async function (
   return await cardController.burnCard(templateId, requestBody);
 };
 
-const executeUpdateCard = async function (cardController, requestBody) {
-  return await cardController.updateCard(requestBody);
+const executeUpgradeCard = async function (cardController, requestBody) {
+  return await cardController.upgradeCard(requestBody);
 };
 
 module.exports = {

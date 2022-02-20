@@ -123,8 +123,11 @@ const updateTagUserCard = async function (requestBody) {
     }
     const matchingCards = user.cards.filter(
       (card) =>
-        card.templateId.toLowerCase() ===
-          requestBody.templateId.toLowerCase() &&
+        card.name.toLowerCase() === requestBody.name.toLowerCase() &&
+        card.group.toLowerCase() === requestBody.group.toLowerCase() &&
+        card.era.toLowerCase() === requestBody.era.toLowerCase() &&
+        card.photo.toLowerCase() === requestBody.photo.toLowerCase() &&
+        card.logo.toLowerCase() === requestBody.logo.toLowerCase() &&
         card.recordedSerial.toLowerCase() ===
           requestBody.recordedSerial.toLowerCase() &&
         card.stars === Number(requestBody.stars) &&
