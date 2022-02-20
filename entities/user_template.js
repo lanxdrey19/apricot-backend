@@ -6,7 +6,23 @@ const userTemplate = {
   cards: {
     type: [
       {
-        templateId: {
+        name: {
+          type: String,
+          required: true,
+        },
+        group: {
+          type: String,
+          required: true,
+        },
+        era: {
+          type: String,
+          required: true,
+        },
+        photo: {
+          type: String,
+          required: true,
+        },
+        logo: {
           type: String,
           required: true,
         },
