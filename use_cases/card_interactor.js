@@ -40,12 +40,8 @@ const executeGetCardsByStars = async function (
   return await cardController.getCardsByStars(userId, upperBound, lowerBound);
 };
 
-const executeAddCardToUser = async function (
-  cardController,
-  templateId,
-  requestBody
-) {
-  return await cardController.addCardToUser(templateId, requestBody);
+const executeAddCardToUser = async function (cardController, requestBody) {
+  return await cardController.addCardToUser(requestBody);
 };
 
 const executeClaimCard = async function (
@@ -56,12 +52,8 @@ const executeClaimCard = async function (
   return await cardController.claimCard(templateId, requestBody);
 };
 
-const executeDeleteCardFromUser = async function (
-  cardController,
-  templateId,
-  requestBody
-) {
-  return await cardController.deleteCardFromUser(templateId, requestBody);
+const executeDeleteCardFromUser = async function (cardController, requestBody) {
+  return await cardController.deleteCardFromUser(requestBody);
 };
 
 const executeBurnCard = async function (

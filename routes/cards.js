@@ -88,11 +88,10 @@ router.get("/stars/:userId/:upperBound?/:lowerBound?", async (req, res) => {
   }
 });
 
-router.patch("/add/:templateId", async (req, res) => {
+router.patch("/add", async (req, res) => {
   try {
     const cards = await cardInteractor.executeAddCardToUser(
       cardController,
-      req.params.templateId,
       req.body
     );
     res.status(200).json(cards);
@@ -118,7 +117,6 @@ router.patch("/delete/:templateId", async (req, res) => {
   try {
     const cards = await cardInteractor.executeDeleteCardFromUser(
       cardController,
-      req.params.templateId,
       req.body
     );
     res.status(200).json(cards);
