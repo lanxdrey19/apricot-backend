@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const serverDAO = require("../../daos/server_dao");
 const Server = require("../../entities/Server");
 
-describe("user_dao", function () {
+describe("server_dao", function () {
   beforeEach(function () {
     sandbox
       .stub(mongoose.Model.prototype, "save")

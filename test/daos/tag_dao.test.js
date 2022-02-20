@@ -14,7 +14,11 @@ describe("tag_dao valid calls", function () {
       ],
       cards: [
         {
-          templateId: "templateId",
+          name: "name",
+          group: "group",
+          era: "era",
+          photo: "photo",
+          logo: "logo",
           recordedSerial: "recordedSerial",
           stars: 5,
           tagName: "tagNameToBeDeleted",
@@ -67,7 +71,11 @@ describe("tag_dao valid calls", function () {
       tagName: "tagNameToBeDeleted",
       tagEmote: "tagEmoteToBeDeleted",
       newTagName: "newTagName",
-      templateId: "templateId",
+      name: "name",
+      group: "group",
+      era: "era",
+      photo: "photo",
+      logo: "logo",
       recordedSerial: "recordedSerial",
       stars: 5,
     };
@@ -85,7 +93,11 @@ describe("tag_dao invalid calls", function () {
       ],
       cards: [
         {
-          templateId: "templateId",
+          name: "name",
+          group: "group",
+          era: "era",
+          photo: "photo",
+          logo: "logo",
           recordedSerial: "recordedSerial",
           stars: 5,
           tagName: "tagNameToBeDeleted",
