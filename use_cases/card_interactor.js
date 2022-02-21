@@ -18,6 +18,14 @@ const executeGetCardsByGroup = async function (
   return await cardController.getCardsByGroup(userId, groupKeyWord);
 };
 
+const executeGetCardsByEra = async function (
+  cardController,
+  userId,
+  eraKeyWord
+) {
+  return await cardController.getCardsByEra(userId, eraKeyWord);
+};
+
 const executeGetCardsByTag = async function (cardController, userId, tagName) {
   return await cardController.getCardsByTag(userId, tagName);
 };
@@ -72,6 +80,7 @@ module.exports = {
   executeGetUserCards,
   executeGetCardsByName,
   executeGetCardsByGroup,
+  executeGetCardsByEra,
   executeGetCardsByTag,
   executeGetCardsBySerial,
   executeGetCardsByStars,
