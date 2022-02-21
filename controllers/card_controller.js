@@ -11,8 +11,12 @@ const getCardsByName = async function (userId, nameKeyWord) {
   return await cardDAO.findCardsByName(userId, nameKeyWord);
 };
 
-const getCardsByGroup = async function (userId, nameKeyWord) {
-  return await cardDAO.findCardsByGroup(userId, nameKeyWord);
+const getCardsByGroup = async function (userId, groupKeyWord) {
+  return await cardDAO.findCardsByGroup(userId, groupKeyWord);
+};
+
+const getCardsByEra = async function (userId, eraKeyWord) {
+  return await cardDAO.findCardsByEra(userId, eraKeyWord);
 };
 
 const getCardsByTag = async function (userId, tagName) {
@@ -30,9 +34,13 @@ const getCardsByStars = async function (userId, upperBound, lowerBound) {
   return await cardDAO.findCardsByStars(userId, upperBound, lowerBound);
 };
 
-const addCardToUser = async function (templateIdentifier, requestBody) {
+const addCardToUser = async function (requestBody) {
   let card = {
-    templateId: templateIdentifier,
+    name: requestBody.name,
+    group: requestBody.group,
+    era: requestBody.era,
+    photo: requestBody.photo,
+    logo: requestBody.logo,
     recordedSerial: requestBody.recordedSerial,
     stars: Number(requestBody.stars),
     tagName: "",
@@ -66,12 +74,16 @@ const claimCard = async function (templateIdentifier, requestBody) {
   );
 };
 
-const deleteCardFromUser = async function (templateIdentifier, requestBody) {
+const deleteCardFromUser = async function (requestBody) {
   let card = {
-    templateId: templateIdentifier,
+    name: requestBody.name,
+    group: requestBody.group,
+    era: requestBody.era,
+    photo: requestBody.photo,
+    logo: requestBody.logo,
     recordedSerial: requestBody.recordedSerial,
     stars: Number(requestBody.stars),
-    tagName: "",
+    tagName: requestBody.tagName,
   };
   let userIdentifier = requestBody.userId;
   return await cardDAO.deleteCardFromUser(userIdentifier, card);
@@ -89,15 +101,15 @@ const burnCard = async function (templateIdentifier, requestBody) {
 
   let finalTokens;
 
-  if (Number(req.body.stars) === 5) {
+  if (Number(requestBody.stars) === 5) {
     finalTokens = Math.floor(Math.random() * 1) + 100;
-  } else if (Number(req.body.stars) === 4) {
+  } else if (Number(requestBody.stars) === 4) {
     finalTokens = Math.floor(Math.random() * 9) + 91;
-  } else if (Number(req.body.stars) === 3) {
+  } else if (Number(requestBody.stars) === 3) {
     finalTokens = Math.floor(Math.random() * 15) + 76;
-  } else if (Number(req.body.stars) === 2) {
+  } else if (Number(requestBody.stars) === 2) {
     finalTokens = Math.floor(Math.random() * 20) + 56;
-  } else if (Number(req.body.stars) === 1) {
+  } else if (Number(requestBody.stars) === 1) {
     finalTokens = Math.floor(Math.random() * 25) + 31;
   } else {
     finalTokens = Math.floor(Math.random() * 30) + 1;
@@ -118,6 +130,7 @@ module.exports = {
   getUserCards,
   getCardsByName,
   getCardsByGroup,
+  getCardsByEra,
   getCardsByTag,
   getCardsBySerial,
   getCardsByStars,

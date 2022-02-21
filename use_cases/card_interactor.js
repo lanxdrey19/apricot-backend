@@ -18,6 +18,14 @@ const executeGetCardsByGroup = async function (
   return await cardController.getCardsByGroup(userId, groupKeyWord);
 };
 
+const executeGetCardsByEra = async function (
+  cardController,
+  userId,
+  eraKeyWord
+) {
+  return await cardController.getCardsByEra(userId, eraKeyWord);
+};
+
 const executeGetCardsByTag = async function (cardController, userId, tagName) {
   return await cardController.getCardsByTag(userId, tagName);
 };
@@ -40,12 +48,8 @@ const executeGetCardsByStars = async function (
   return await cardController.getCardsByStars(userId, upperBound, lowerBound);
 };
 
-const executeAddCardToUser = async function (
-  cardController,
-  templateId,
-  requestBody
-) {
-  return await cardController.addCardToUser(templateId, requestBody);
+const executeAddCardToUser = async function (cardController, requestBody) {
+  return await cardController.addCardToUser(requestBody);
 };
 
 const executeClaimCard = async function (
@@ -56,12 +60,8 @@ const executeClaimCard = async function (
   return await cardController.claimCard(templateId, requestBody);
 };
 
-const executeDeleteCardFromUser = async function (
-  cardController,
-  templateId,
-  requestBody
-) {
-  return await cardController.deleteCardFromUser(templateId, requestBody);
+const executeDeleteCardFromUser = async function (cardController, requestBody) {
+  return await cardController.deleteCardFromUser(requestBody);
 };
 
 const executeBurnCard = async function (
@@ -72,14 +72,15 @@ const executeBurnCard = async function (
   return await cardController.burnCard(templateId, requestBody);
 };
 
-const executeUpdateCard = async function (cardController, requestBody) {
-  return await cardController.updateCard(requestBody);
+const executeUpgradeCard = async function (cardController, requestBody) {
+  return await cardController.upgradeCard(requestBody);
 };
 
 module.exports = {
   executeGetUserCards,
   executeGetCardsByName,
   executeGetCardsByGroup,
+  executeGetCardsByEra,
   executeGetCardsByTag,
   executeGetCardsBySerial,
   executeGetCardsByStars,

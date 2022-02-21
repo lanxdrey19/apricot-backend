@@ -18,22 +18,10 @@ const findCardsByName = async function (userIdentifier, nameKeyWord) {
     const user = await User.findOne({
       userId: userIdentifier,
     });
-
-    let validCards = [];
-
-    const cardsLength = user.cards.length;
-    let count = 0;
-
-    user.cards.forEach(async (card) => {
-      const template = await Template.findById(card.templateId);
-      if (template.name.toLowerCase().includes(nameKeyWord.toLowerCase())) {
-        validCards.push(card);
-      }
-      count++;
-      if (count === cardsLength) {
-        return validCards;
-      }
-    });
+    const result = user.cards.filter((card) =>
+      card.name.toLowerCase().includes(nameKeyWord.toLowerCase())
+    );
+    return result;
   } catch (err) {
     throw new Error(
       "cards with that certain key term in their name can not be retrieved"
@@ -46,25 +34,29 @@ const findCardsByGroup = async function (userIdentifier, groupKeyWord) {
     const user = await User.findOne({
       userId: userIdentifier,
     });
-
-    let validCards = [];
-
-    const cardsLength = user.cards.length;
-    let count = 0;
-
-    user.cards.forEach(async (card) => {
-      const template = await Template.findById(card.templateId);
-      if (template.group.toLowerCase().includes(groupKeyWord.toLowerCase())) {
-        validCards.push(card);
-      }
-      count++;
-      if (count === cardsLength) {
-        return validCards;
-      }
-    });
+    const result = user.cards.filter((card) =>
+      card.group.toLowerCase().includes(groupKeyWord.toLowerCase())
+    );
+    return result;
   } catch (err) {
     throw new Error(
-      "cards with that certain key term in their group can not be retrieved"
+      "cards with that certain key term in their name can not be retrieved"
+    );
+  }
+};
+
+const findCardsByEra = async function (userIdentifier, eraKeyWord) {
+  try {
+    const user = await User.findOne({
+      userId: userIdentifier,
+    });
+    const result = user.cards.filter((card) =>
+      card.era.toLowerCase().includes(eraKeyWord.toLowerCase())
+    );
+    return result;
+  } catch (err) {
+    throw new Error(
+      "cards with that certain key term in their era can not be retrieved"
     );
   }
 };
@@ -75,7 +67,7 @@ const findCardsByTag = async function (userIdentifier, tagName) {
       userId: userIdentifier,
     });
     const result = user.cards.filter(
-      (card) => card.tagName === tagName.toLowerCase()
+      (card) => card.tagName.toLowerCase() === tagName.toLowerCase()
     );
     return result;
   } catch (err) {
@@ -144,7 +136,11 @@ const addClaimedCardToUser = async function (
 ) {
   const template = await Template.findById(templateIdentifier);
   let card = {
-    templateId: template._id,
+    name: template.name,
+    group: template.group,
+    era: template.era,
+    photo: template.photo,
+    logo: template.logo,
     recordedSerial: template.serial,
     stars: finalStars,
     tagName: "",
@@ -186,7 +182,7 @@ const deleteBurntCardFromUser = async function (
     );
   } else {
     updatedUser = await User.updateOne(
-      { userId: req.body.userId },
+      { userId: userIdentifier },
       { $inc: { tokens: finalTokens }, $pull: { cards: cardObject } }
     );
   }
@@ -199,40 +195,37 @@ const updateCardStars = async function (requestBody) {
       userId: requestBody.userId,
     });
 
-    user.cards.forEach(async (card) => {
-      if (Number(requestBody.stars === 5)) {
-        throw new Error("Card cannot be upgraded any further");
-      }
+    if (Number(requestBody.stars === 5)) {
+      throw new Error("Card cannot be upgraded any further");
+    }
 
-      if (
-        card.templateId.toLowerCase() ===
-          requestBody.templateId.toLowerCase() &&
+    const result = user.cards.filter(
+      (card) =>
+        card.name.toLowerCase() === requestBody.name.toLowerCase() &&
+        card.group.toLowerCase() === requestBody.group.toLowerCase() &&
+        card.era.toLowerCase() === requestBody.era.toLowerCase() &&
+        card.photo.toLowerCase() === requestBody.photo.toLowerCase() &&
+        card.logo.toLowerCase() === requestBody.logo.toLowerCase() &&
         card.recordedSerial.toLowerCase() ===
           requestBody.recordedSerial.toLowerCase() &&
         card.stars === Number(requestBody.stars) &&
         card.tagName === requestBody.tagName.toLowerCase()
-      ) {
-        const updatedUser = await User.updateOne(
-          {
-            userId: requestBody.userId,
-            cards: {
-              $elemMatch: {
-                templateId: card.templateId,
-                recordedSerial: card.recordedSerial,
-                stars: card.stars,
-                tagName: card.tagName,
-              },
-            },
-          },
-          {
-            $inc: {
-              "cards.$.stars": 1,
-            },
-          }
-        );
-        return updatedUser;
+    );
+
+    const updatedUser = await User.updateOne(
+      {
+        userId: requestBody.userId,
+        cards: {
+          $elemMatch: result[0],
+        },
+      },
+      {
+        $inc: {
+          "cards.$.stars": 1,
+        },
       }
-    });
+    );
+    return updatedUser;
   } catch (err) {
     throw new Error("Card's stars could not be incremented");
   }
@@ -242,6 +235,7 @@ module.exports = {
   findUserCards,
   findCardsByName,
   findCardsByGroup,
+  findCardsByEra,
   findCardsByTag,
   findCardsBySerial,
   findCardsByStars,
